@@ -26,4 +26,21 @@ function createBondPrice({ bond_id, date, open_p, close_p }) {
   });
 }
 
-module.exports = { getPricesByBond, createBondPrice };
+function getLatestBondPrice(bond_id) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT close_p
+           FROM BondPriceHistory
+          WHERE bond_id = ?
+          ORDER BY date DESC
+          LIMIT 1`,
+        [bond_id],
+        (err, rows) => {
+          if (err) return reject(err);
+          resolve(rows[0]?.close_p ?? null);
+        }
+      );
+    });
+  }
+
+module.exports = { getPricesByBond, createBondPrice, getLatestBondPrice };

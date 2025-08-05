@@ -26,4 +26,22 @@ function createStockPrice({ stock_id, date, open_p, close_p }) {
   });
 }
 
-module.exports = { getPricesByStock, createStockPrice };
+function getLatestStockPrice(stock_id) {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `SELECT close_p
+           FROM StockPriceHistory
+          WHERE stock_id = ?
+          ORDER BY date DESC
+          LIMIT 1`,
+        [stock_id],
+        (err, rows) => {
+          if (err) return reject(err);
+          resolve(rows[0]?.close_p ?? null);
+        }
+      );
+    });
+  }
+  
+
+module.exports = { getPricesByStock, createStockPrice, getLatestStockPrice };
